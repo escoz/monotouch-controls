@@ -50,6 +50,8 @@ namespace escoz.monotouch
 		}
 		
 		public UIWebImageView(RectangleF frame, string url):base(frame){
+			Initialize();
+			Frame = frame;
 			DownloadImage(url);
 		}
 		
