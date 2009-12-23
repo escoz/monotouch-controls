@@ -6,10 +6,9 @@ using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using System.Drawing;
 
-namespace escoz.monotouch
+namespace UICatalog
 {
-	[Register("UIWebImageView")]
-	public class UIWebImageView : UIImageView
+	public partial class UIWebImageView : UIImageView
 	{
 		NSMutableData imageData;
 		UIActivityIndicatorView indicatorView;
@@ -28,8 +27,6 @@ namespace escoz.monotouch
 
 		void Initialize ()
 		{
-			imageData = new NSMutableData();
-						
 			indicatorView = new UIActivityIndicatorView(UIActivityIndicatorViewStyle.Gray);
 			indicatorView.HidesWhenStopped = true;
 			var width  = (this.Frame.Width-20)/2;
@@ -62,7 +59,6 @@ namespace escoz.monotouch
 			new NSUrlConnection(request, new ConnectionDelegate(this), true);
 		}
 		
-		
 		class ConnectionDelegate : NSUrlConnectionDelegate {
 			
 			UIWebImageView _view;
@@ -73,14 +69,17 @@ namespace escoz.monotouch
 			
 			public override void ReceivedData (NSUrlConnection connection, NSData data)
 			{
+				if (_view.imageData==null)
+					_view.imageData = new NSMutableData();
+				
 				_view.imageData.AppendData(data);	
 			}
 			
 			public override void FinishedLoading (NSUrlConnection connection)
 			{
-				System.Threading.Thread.Sleep(5000);
 				_view.indicatorView.StopAnimating();
 				UIImage downloadedImage = UIImage.LoadFromData(_view.imageData);
+				_view.imageData = null;
 				_view.Image = downloadedImage;
 			}
 		}
