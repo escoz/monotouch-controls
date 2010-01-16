@@ -29,6 +29,7 @@ namespace UICatalog
 					this.tvc = tvc;
 					tvc._controls.Add("UIWebImageView");
 					tvc._controls.Add("RotatingViewController");
+					tvc._controls.Add("UIDecimalField");
 				}
 				
 				public override int RowsInSection (UITableView tableView, int section)
@@ -69,12 +70,15 @@ namespace UICatalog
 					switch (selected){
 						case "UIWebImageView":
 							tvc.NavigationController.PushViewController(new UIWebImageViewController(), true);
-							Console.WriteLine("Opening view for " + selected);
 							break;
+					
 						case "RotatingViewController":
 							tvc.NavigationController.PushViewController(_createRotatingViewController(), true);
-					
-							Console.WriteLine("Opening view for " + selected);
+							break;
+						
+						case "UIDecimalField":
+							tvc.NavigationController.PushViewController(
+					                 new AmountEditorViewController(1234.23m, "Amount"), true);
 							break;
 					}
 				}
