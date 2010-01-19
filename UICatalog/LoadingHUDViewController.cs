@@ -38,7 +38,8 @@ namespace UICatalog
 			View.AddSubview(btnSmall);
 			
 			View.AddSubview(new UILabel{Text="Click to show the HUD View",
-				Frame = new RectangleF(20, 100, 300, 40)});
+				Frame = new RectangleF(0, 100, 320, 40), 
+			TextAlignment = UITextAlignment.Center});
 			
 		}
 

@@ -44,7 +44,7 @@ namespace UICatalog {
 		UIActivityIndicatorView _activity;
 		bool _hidden;
 		UIFont titleFont = UIFont.BoldSystemFontOfSize(16);
-		UIFont messageFont = UIFont.SystemFontOfSize(12);
+		UIFont messageFont = UIFont.SystemFontOfSize(13);
 	
 		public string Title {
 			get { return _title; }
@@ -95,7 +95,7 @@ namespace UICatalog {
 	
 		protected void AdjustHeight() {
 			SizeF titleSize = calculateHeightOfTextForWidth(_title, titleFont, 200, UILineBreakMode.TailTruncation);
-			SizeF messageSize = calculateHeightOfTextForWidth(_message, messageFont, 200, UILineBreakMode.TailTruncation);
+			SizeF messageSize = calculateHeightOfTextForWidth(_message, messageFont, 200, UILineBreakMode.WordWrap);
 	
 			var textHeight = titleSize.Height + messageSize.Height;
 			
@@ -110,12 +110,13 @@ namespace UICatalog {
 	
 			int width, rWidth, rHeight, x;
 			SizeF titleSize = calculateHeightOfTextForWidth(_title, titleFont, 200, UILineBreakMode.TailTruncation);
-			SizeF messageSize = calculateHeightOfTextForWidth(_message, titleFont, 200, UILineBreakMode.TailTruncation);
+			SizeF messageSize = calculateHeightOfTextForWidth(_message, messageFont, 200, UILineBreakMode.WordWrap);
 	
 			if (_title.Length<1) titleSize.Height = 0;
 			if (_message==null || _message.Length<1) messageSize.Height = 0;
 			
-			rHeight = (int)(titleSize.Height+messageSize.Height+HEIGHT_MARGIN*2 + 10 + _activity.Frame.Size.Height);
+			rHeight = (int)(titleSize.Height+HEIGHT_MARGIN*2 + _activity.Frame.Size.Height);
+			rHeight += (int)(messageSize.Height>0 ? messageSize.Height + 10 : 0);
 			rWidth = width = (int)Math.Max(titleSize.Width, messageSize.Width);
 			rWidth += WIDTH_MARGIN * 2;
 			x = (320-rWidth) /2;
@@ -128,7 +129,7 @@ namespace UICatalog {
 			
 			// Title
 			UIColor.White.SetColor();
-			var textRect = new RectangleF(x+WIDTH_MARGIN, _activity.Frame.Size.Height + 30 + HEIGHT_MARGIN,
+			var textRect = new RectangleF(x+WIDTH_MARGIN, _activity.Frame.Size.Height + 25 + HEIGHT_MARGIN,
 				width, titleSize.Height);
 			 SizeF titleDrawSize = this.DrawString(_title, textRect, titleFont, UILineBreakMode.TailTruncation, UITextAlignment.Center);
 	
@@ -138,7 +139,7 @@ namespace UICatalog {
 			textRect = new RectangleF(textRect.Location, new SizeF(textRect.Size.Width, messageSize.Height));
 			
 			if (_message!=null)
-				this.DrawString(_message, textRect, messageFont, UILineBreakMode.CharacterWrap, UITextAlignment.Center);
+				this.DrawString(_message, textRect, messageFont, UILineBreakMode.WordWrap, UITextAlignment.Center);
 		}
 	
 		protected SizeF calculateHeightOfTextForWidth(string text, UIFont font, float width, UILineBreakMode lineBreakMode){
