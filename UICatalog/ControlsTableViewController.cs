@@ -30,6 +30,7 @@ namespace UICatalog
 					tvc._controls.Add("UIWebImageView");
 					tvc._controls.Add("RotatingViewController");
 					tvc._controls.Add("UIDecimalField");
+					tvc._controls.Add("LoadingHUDView");
 				}
 				
 				public override int RowsInSection (UITableView tableView, int section)
@@ -79,6 +80,11 @@ namespace UICatalog
 						case "UIDecimalField":
 							tvc.NavigationController.PushViewController(
 					                 new AmountEditorViewController(1234.23m, "Amount"), true);
+							break;
+					
+						case "LoadingHUDView" :
+							tvc.NavigationController.PushViewController(
+					                 new LoadingHUDViewController(), true);
 							break;
 					}
 				}
