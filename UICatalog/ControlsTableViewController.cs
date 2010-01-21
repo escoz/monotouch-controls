@@ -31,6 +31,7 @@ namespace UICatalog
 					tvc._controls.Add("RotatingViewController");
 					tvc._controls.Add("UIDecimalField");
 					tvc._controls.Add("LoadingHUDView");
+					tvc._controls.Add("CalendarMonthView");
 				}
 				
 				public override int RowsInSection (UITableView tableView, int section)
@@ -85,6 +86,10 @@ namespace UICatalog
 						case "LoadingHUDView" :
 							tvc.NavigationController.PushViewController(
 					                 new LoadingHUDViewController(), true);
+							break;
+						case "CalendarMonthView" :
+							tvc.NavigationController.PushViewController(
+					                 new CalendarMonthViewController{Title="Calendar"}, true);
 							break;
 					}
 				}

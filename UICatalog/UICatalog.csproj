@@ -78,6 +78,11 @@
       <DependentUpon>UIWebImageViewController.xib</DependentUpon>
     </Compile>
     <Compile Include="RotatingViewController.cs" />
+    <Compile Include="AmountEditorViewController.cs" />
+    <Compile Include="UIDecimalField.cs" />
+    <Compile Include="LoadingHUDView.cs" />
+    <Compile Include="LoadingHUDViewController.cs" />
+    <Compile Include="CalendarMonthView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindow.xib" />
@@ -89,4 +94,18 @@
       <Properties InternalTargetFrameworkVersion="IPhone" />
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="images\" />
+    <Folder Include="images\calendar\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="images\calendar\datecell.png" />
+    <Content Include="images\calendar\datecellselected.png" />
+    <Content Include="images\calendar\leftarrow.png" />
+    <Content Include="images\calendar\rightarrow.png" />
+    <Content Include="images\calendar\today.png" />
+    <Content Include="images\calendar\todayselected.png" />
+    <Content Include="images\calendar\topbar.png" />
+    <Content Include="images\calendar\shadow.png" />
+  </ItemGroup>
 </Project>
