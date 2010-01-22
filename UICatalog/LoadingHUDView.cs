@@ -1,7 +1,8 @@
 //
 //  LoadingHUDView.cs
+//
 //  Converted to MonoTouch on 1/18/09 - Eduardo Scoz || http://escoz.com
-//  Created by Devin Ross on 7/2/09 - tapku.com || http://github.com/devinross/tapkulibrary
+//  Originaly created by Devin Ross on 7/2/09 - tapku.com || http://github.com/devinross/tapkulibrary
 //
 /*
  
