@@ -19,8 +19,8 @@ namespace UICatalog
 
         private readonly UIScrollView _scrollView;
         private readonly UIImageView _shadow;
-        private readonly ArrayList _deck;
-        private readonly MonthGridView _monthGridView;
+        
+		private MonthGridView _monthGridView;
         private UIButton _leftButton, _rightButton;
 
         public CalendarMonthView() : base(new RectangleF(0, 0, 320, 400))
@@ -30,7 +30,7 @@ namespace UICatalog
             _scrollView = new UIScrollView(new RectangleF(0, 44, 320, 460 - 44))
                   {
                       ContentSize = new SizeF(320, 260),
-                      ScrollEnabled = false,
+                      ScrollEnabled = true,
 					  Frame = new RectangleF(0, 44, 320, 460-44),
                       BackgroundColor = UIColor.FromRGBA(222/255f, 222/255f, 225/255f, 1f)
                   };
@@ -39,61 +39,90 @@ namespace UICatalog
             
             LoadButtons();
 
-            _monthGridView = LoadInitialGrids();
+            LoadInitialGrids();
 
             BackgroundColor = UIColor.Clear;
             AddSubview(_scrollView);
             AddSubview(_shadow);
-            _scrollView.AddSubview(_monthGridView);
+			_scrollView.AddSubview(_monthGridView);
         }
 
         private void LoadButtons()
         {
             _leftButton = UIButton.FromType(UIButtonType.Custom);
-            _leftButton.TouchUpInside += HandleLeftButtonTouchUpInside;
+            _leftButton.TouchUpInside += HandlePreviousMonthTouch;
             _leftButton.SetImage(UIImage.FromFile("images/calendar/leftarrow.png"), UIControlState.Normal);
             AddSubview(_leftButton);
             _leftButton.Frame = new RectangleF(10, 0, 44, 42);
 
             _rightButton = UIButton.FromType(UIButtonType.Custom);
-            _rightButton.TouchUpInside += HandleRightButtonTouchUpInside;
+            _rightButton.TouchUpInside += HandleNextMonthTouch;
             _rightButton.SetImage(UIImage.FromFile("images/calendar/rightarrow.png"), UIControlState.Normal);
             AddSubview(_rightButton);
             _rightButton.Frame = new RectangleF(320 - 56, 0, 44, 42);
         }
 
-        void HandleRightButtonTouchUpInside(object sender, EventArgs e)
-        {
-            MoveCalendarMonths(true, true);
-        }
-        void HandleLeftButtonTouchUpInside(object sender, EventArgs e)
+        private void HandlePreviousMonthTouch(object sender, EventArgs e)
         {
             MoveCalendarMonths(false, true);
         }
-
-        private void MoveCalendarMonths(bool upwards, bool animated)
+        private void HandleNextMonthTouch(object sender, EventArgs e)
         {
-            UserInteractionEnabled = false;
-            SetNeedsDisplay();
+            MoveCalendarMonths(true, true);
+        }
+
+        public void MoveCalendarMonths(bool upwards, bool animated)
+        {
+			CurrentMonthYear = CurrentMonthYear.AddMonths(upwards? 1 : -1);
+			UserInteractionEnabled = false;
+			
+			var pointsToMove = (upwards? 0 +_monthGridView.Lines : 0-_monthGridView.Lines ) * 44;
+			var gridToMove = CreateNewGrid(CurrentMonthYear);
+			gridToMove.Frame = new RectangleF(new PointF(0, pointsToMove), gridToMove.Frame.Size);
+			
+			_scrollView.AddSubview(gridToMove);
+			
+			if (animated){
+				UIView.BeginAnimations("changeMonth");
+				UIView.SetAnimationDuration(0.4);
+				UIView.SetAnimationDelay(0.1);
+				UIView.SetAnimationCurve(UIViewAnimationCurve.EaseInOut);
+			}
+			
+			_monthGridView.Center = new PointF(_monthGridView.Center.X, _monthGridView.Center.Y - pointsToMove);
+			gridToMove.Center = new PointF(gridToMove.Center.X, gridToMove.Center.Y - pointsToMove);
+			
+			_monthGridView.Alpha = 0;
+			
+			_shadow.Frame = new RectangleF(new PointF(0, gridToMove.Lines*44-88), _shadow.Frame.Size);
+            _scrollView.Frame = new RectangleF(
+			               _scrollView.Frame.Location,
+			               new SizeF(_scrollView.Frame.Width, (gridToMove.Lines + 1) * 44));
+			SetNeedsDisplay();
+			
+			if (animated)
+				UIView.CommitAnimations();
+			
+			_monthGridView = gridToMove;
+			
             UserInteractionEnabled = true;
-            
         }
 		
-		private void OnDateSelectedHandler(DateTime date){
-			if (OnDateSelected!=null)
-				OnDateSelected(date);
+		private MonthGridView CreateNewGrid(DateTime date){
+			var grid = new MonthGridView(this, date, CurrentDate);
+			grid.BuildGrid();
+			grid.Frame = new RectangleF(0, 420, 320, 400);
+			return grid;
 		}
 		
-        private MonthGridView LoadInitialGrids()
+        private void LoadInitialGrids()
         {
-            var grid = new MonthGridView(CurrentMonthYear, CurrentDate);
-			grid.OnDateSelected += OnDateSelectedHandler;
-			grid.BuildGrid();
-			grid.Frame = new RectangleF(0, 0, 320, 400);
-			
+            _monthGridView = new MonthGridView(this, CurrentMonthYear, CurrentDate);
+			_monthGridView.BuildGrid();
+			_monthGridView.Frame = new RectangleF(0, 0, 320, 400);
 			
             var rect = _scrollView.Frame;
-            rect.Size = new SizeF { Height = (grid.Lines + 1) * 44, Width = rect.Size.Width };
+            rect.Size = new SizeF { Height = (_monthGridView.Lines + 1) * 44, Width = rect.Size.Width };
             _scrollView.Frame = rect;
 
             Frame = new RectangleF(Frame.X, Frame.Y, _scrollView.Frame.Size.Width, _scrollView.Frame.Size.Height);
@@ -101,9 +130,6 @@ namespace UICatalog
             var imgRect = _shadow.Frame;
             imgRect.Y = rect.Size.Height - 132;
             _shadow.Frame = imgRect;
-
-            return grid;
-
         }
 
         public override void Draw(RectangleF rect)
@@ -118,7 +144,6 @@ namespace UICatalog
             var r = new RectangleF(new PointF(0, 5), new SizeF {Width = 320, Height = 42});
 			UIColor.DarkGray.SetColor(); // TODO  proper color needs to be set
             //UIColor.FromRGBA(75/255, 92/255, 111/255, 1).SetColor();
-			var a  = CurrentMonthYear.ToString("MMMM yyyy");
             DrawString(CurrentMonthYear.ToString("MMMM yyyy"), 
                 r, UIFont.BoldSystemFontOfSize(20),
                 UILineBreakMode.WordWrap, UITextAlignment.Center);
@@ -144,7 +169,7 @@ namespace UICatalog
 
     public class MonthGridView : UIView
     {
-		public DateSelected OnDateSelected;
+		private CalendarMonthView _calendarMonthView;
 		
         private readonly DateTime _currentDay;
         private DateTime _currentMonth;
@@ -154,8 +179,9 @@ namespace UICatalog
 
         public IList<DateTime> Marks { get; set; }
 
-        public MonthGridView(DateTime month, DateTime day)
+        public MonthGridView(CalendarMonthView calendarMonthView, DateTime month, DateTime day)
         {
+			_calendarMonthView = calendarMonthView;
             _currentDay = day;
             _currentMonth = month.Date;
         }
@@ -169,7 +195,7 @@ namespace UICatalog
             var lead = daysInPreviousMonth - (weekdayOfFirst - 1);
 
             // build last month's days
-            for (int i = 1; i < weekdayOfFirst; i++)
+            for (int i = 1; i <= weekdayOfFirst; i++)
             {
                 var dayView = new CalendarDayView
                 {
@@ -182,21 +208,23 @@ namespace UICatalog
                 lead++;
             }
 
-            var position = weekdayOfFirst;
+            var position = weekdayOfFirst+1;
             var line = 0;
 
             // current month
-            for (int i = 1; i < daysInMonth; i++)
+            for (int i = 1; i <= daysInMonth; i++)
             {
                 var dayView = new CalendarDayView
                   {
                       Frame = new RectangleF((position - 1) * 46 - 1, line * 44, 47, 45),
-                      Today = (i == _currentDay.Day),
+                      Today = (i == _currentDay.Day)
+					            && _currentMonth.Month == _currentDay.Month 
+					            && _currentMonth.Year == _currentDay.Year,
                       Text = i.ToString(),
                       Active = true,
                       Tag = i,
                       Marked = IsDayMarked(i),
-					  Selected = (i == _currentDay.AddDays(1).Day)
+					  Selected = (i == _currentDay.AddDays(1).Day )
                   };
 				
 				if (dayView.Selected)
@@ -259,9 +287,8 @@ namespace UICatalog
 		public override void TouchesEnded (NSSet touches, UIEvent evt)
 		{
 			base.TouchesEnded (touches, evt);
-			OnDateSelected(new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag));
+			_calendarMonthView.OnDateSelected(new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag));
 		}
-
 
 		private void SelectDayView(UITouch touch){
 			var p = touch.LocationInView(this);
@@ -274,10 +301,11 @@ namespace UICatalog
 			if (newSelectedDayView == SelectedDayView) return;
 			
 			if (!newSelectedDayView.Active){
-				if (int.Parse(newSelectedDayView.Text) > 15)
-					this.previousMonthDayWasSelected(newSelectedDayView.Text);
+				var day = int.Parse(newSelectedDayView.Text);
+				if (day > 15)
+					_calendarMonthView.MoveCalendarMonths(false, true);
 				else
-					this.nextMonthDayWasSelected(newSelectedDayView.Text);
+					_calendarMonthView.MoveCalendarMonths(true, true);
 				return;
 			}
 			
@@ -286,12 +314,7 @@ namespace UICatalog
 			newSelectedDayView.Selected = true;
 			SelectedDayView = newSelectedDayView;
 			
-			
 		}
-		
-		private void previousMonthDayWasSelected(string txt){}
-		private void nextMonthDayWasSelected(string txt){}
-
 
     }
 
