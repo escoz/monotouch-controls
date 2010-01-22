@@ -11,28 +11,9 @@ namespace UICatalog
     public delegate void DateSelected(DateTime date);
     public delegate void MonthChanged(DateTime monthSelected);
 
-
-    public class CalendarMonthViewController : UIViewController
-    {
-
-        public CalendarMonthView MonthView;
-
-        public override void ViewDidLoad()
-        {
-            MonthView = new CalendarMonthView();
-            View.AddSubview(MonthView);
-        }
-
-        public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
-        {
-            return false;
-        }
-
-    }
-
     public class CalendarMonthView : UIView
     {
-		public DateSelected OnDateSelectedHandler;
+		public DateSelected OnDateSelected;
         public DateTime CurrentMonthYear = DateTime.Now;
         protected DateTime CurrentDate { get; set; }
 
@@ -98,15 +79,15 @@ namespace UICatalog
             
         }
 		
-		private void OnDateSelected(DateTime date){
-			if (OnDateSelectedHandler!=null)
-				OnDateSelectedHandler(date);
+		private void OnDateSelectedHandler(DateTime date){
+			if (OnDateSelected!=null)
+				OnDateSelected(date);
 		}
 		
         private MonthGridView LoadInitialGrids()
         {
             var grid = new MonthGridView(CurrentMonthYear, CurrentDate);
-			grid.OnDateSelectedHandle += OnDateSelected;
+			grid.OnDateSelected += OnDateSelectedHandler;
 			grid.BuildGrid();
 			grid.Frame = new RectangleF(0, 0, 320, 400);
 			
@@ -163,7 +144,7 @@ namespace UICatalog
 
     public class MonthGridView : UIView
     {
-		public DateSelected OnDateSelectedHandle;
+		public DateSelected OnDateSelected;
 		
         private readonly DateTime _currentDay;
         private DateTime _currentMonth;
@@ -185,7 +166,7 @@ namespace UICatalog
             var daysInPreviousMonth = DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month);
             var daysInMonth = DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month);
             var weekdayOfFirst = (int)_currentMonth.DayOfWeek;
-            var lead = daysInPreviousMonth - (weekdayOfFirst - 2);
+            var lead = daysInPreviousMonth - (weekdayOfFirst - 1);
 
             // build last month's days
             for (int i = 1; i < weekdayOfFirst; i++)
@@ -274,6 +255,13 @@ namespace UICatalog
 			base.TouchesMoved (touches, evt);
 			this.SelectDayView((UITouch)touches.AnyObject);
 		}
+		
+		public override void TouchesEnded (NSSet touches, UIEvent evt)
+		{
+			base.TouchesEnded (touches, evt);
+			OnDateSelected(new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag));
+		}
+
 
 		private void SelectDayView(UITouch touch){
 			var p = touch.LocationInView(this);
@@ -298,7 +286,6 @@ namespace UICatalog
 			newSelectedDayView.Selected = true;
 			SelectedDayView = newSelectedDayView;
 			
-			OnDateSelectedHandle(new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag));
 			
 		}
 		

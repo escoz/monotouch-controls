@@ -83,6 +83,7 @@
     <Compile Include="LoadingHUDView.cs" />
     <Compile Include="LoadingHUDViewController.cs" />
     <Compile Include="CalendarMonthView.cs" />
+    <Compile Include="CalendarMonthViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindow.xib" />
