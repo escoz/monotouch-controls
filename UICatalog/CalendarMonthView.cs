@@ -41,17 +41,21 @@ namespace UICatalog
 
     public delegate void DateSelected(DateTime date);
     public delegate void MonthChanged(DateTime monthSelected);
+	public delegate bool IsDayMarked(DateTime date);
 
     public class CalendarMonthView : UIView
     {
 		public DateSelected OnDateSelected;
 		public DateSelected OnFinishedDateSelection;
+		public IsDayMarked IsDayMarkedDelegate;
+		
         public DateTime CurrentMonthYear;
         protected DateTime CurrentDate { get; set; }
 
-        private readonly UIScrollView _scrollView;
-        private readonly UIImageView _shadow;
-        
+        private UIScrollView _scrollView;
+        private UIImageView _shadow;
+        private bool calendarIsLoaded;
+		
 		private MonthGridView _monthGridView;
         private UIButton _leftButton, _rightButton;
 
@@ -59,8 +63,13 @@ namespace UICatalog
         {
             CurrentDate = DateTime.Now.Date;
 			CurrentMonthYear = new DateTime(CurrentDate.Year, CurrentDate.Month, 1);
-
-            _scrollView = new UIScrollView(new RectangleF(0, 44, 320, 460 - 44))
+		}
+		
+		public override void LayoutSubviews ()
+		{
+			if (calendarIsLoaded) return;
+			
+			_scrollView = new UIScrollView(new RectangleF(0, 44, 320, 460 - 44))
                   {
                       ContentSize = new SizeF(320, 260),
                       ScrollEnabled = false,
@@ -78,6 +87,8 @@ namespace UICatalog
             AddSubview(_scrollView);
             AddSubview(_shadow);
 			_scrollView.AddSubview(_monthGridView);
+			
+			calendarIsLoaded = true;
         }
 
         private void LoadButtons()
@@ -111,6 +122,12 @@ namespace UICatalog
 			
 			var pointsToMove = (upwards? 0 +_monthGridView.Lines : 0-_monthGridView.Lines ) * 44;
 			var gridToMove = CreateNewGrid(CurrentMonthYear);
+			
+			if (upwards && gridToMove.weekdayOfFirst==0)
+				pointsToMove += 44;
+			if (!upwards && _monthGridView.weekdayOfFirst==0)
+				pointsToMove -= 44;
+			
 			gridToMove.Frame = new RectangleF(new PointF(0, pointsToMove), gridToMove.Frame.Size);
 			
 			_scrollView.AddSubview(gridToMove);
@@ -211,7 +228,7 @@ namespace UICatalog
         protected readonly IList<CalendarDayView> _dayTiles = new List<CalendarDayView>();
         public int Lines { get; set; }
 		protected CalendarDayView SelectedDayView {get;set;}
-
+		public int weekdayOfFirst;
         public IList<DateTime> Marks { get; set; }
 
         public MonthGridView(CalendarMonthView calendarMonthView, DateTime month, DateTime day)
@@ -226,7 +243,7 @@ namespace UICatalog
             DateTime previousMonth = _currentMonth.AddMonths(-1);
             var daysInPreviousMonth = DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month);
             var daysInMonth = DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month);
-            var weekdayOfFirst = (int)_currentMonth.DayOfWeek;
+            weekdayOfFirst = (int)_currentMonth.DayOfWeek;
             var lead = daysInPreviousMonth - (weekdayOfFirst - 1);
 
             // build last month's days
@@ -249,16 +266,16 @@ namespace UICatalog
             // current month
             for (int i = 1; i <= daysInMonth; i++)
             {
+				var viewDay = new DateTime(_currentMonth.Year, _currentMonth.Month, i);
                 var dayView = new CalendarDayView
                   {
                       Frame = new RectangleF((position - 1) * 46 - 1, line * 44, 47, 45),
-                      Today = (i == _currentDay.Day)
-					            && _currentMonth.Month == _currentDay.Month 
-					            && _currentMonth.Year == _currentDay.Year,
+                      Today = (_currentDay.Date==viewDay.Date),
                       Text = i.ToString(),
                       Active = true,
                       Tag = i,
-                      Marked = IsDayMarked(i),
+                      Marked = _calendarMonthView.IsDayMarkedDelegate == null ? 
+							false : _calendarMonthView.IsDayMarkedDelegate(viewDay),
 					  Selected = (i == _currentDay.AddDays(1).Day )
                   };
 				
@@ -300,12 +317,6 @@ namespace UICatalog
 
             Lines = (position == 1 ? line - 1 : line);
         }
-
-        private bool IsDayMarked(int day)
-        {
-            return true;//return Marks.Contains(new DateTime(_currentMonth.Year, _currentMonth.Month, day));
-        }
-		
 		
 		public override void TouchesBegan (NSSet touches, UIEvent evt)
 		{

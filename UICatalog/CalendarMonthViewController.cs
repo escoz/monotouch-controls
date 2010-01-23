@@ -21,6 +21,9 @@ namespace UICatalog
 			MonthView.OnFinishedDateSelection += (date) => {
 				Console.WriteLine(String.Format("Finished selecting {0}", date.ToShortDateString()));
 			};
+			MonthView.IsDayMarkedDelegate += (date) => {
+				return (date.Day % 2==0) ? true : false;
+			};
             View.AddSubview(MonthView);
         }
 		
