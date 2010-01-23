@@ -45,7 +45,8 @@ namespace UICatalog
     public class CalendarMonthView : UIView
     {
 		public DateSelected OnDateSelected;
-        public DateTime CurrentMonthYear = DateTime.Now;
+		public DateSelected OnFinishedDateSelection;
+        public DateTime CurrentMonthYear;
         protected DateTime CurrentDate { get; set; }
 
         private readonly UIScrollView _scrollView;
@@ -57,11 +58,12 @@ namespace UICatalog
         public CalendarMonthView() : base(new RectangleF(0, 0, 320, 400))
         {
             CurrentDate = DateTime.Now.Date;
+			CurrentMonthYear = new DateTime(CurrentDate.Year, CurrentDate.Month, 1);
 
             _scrollView = new UIScrollView(new RectangleF(0, 44, 320, 460 - 44))
                   {
                       ContentSize = new SizeF(320, 260),
-                      ScrollEnabled = true,
+                      ScrollEnabled = false,
 					  Frame = new RectangleF(0, 44, 320, 460-44),
                       BackgroundColor = UIColor.FromRGBA(222/255f, 222/255f, 225/255f, 1f)
                   };
@@ -126,9 +128,12 @@ namespace UICatalog
 			_monthGridView.Alpha = 0;
 			
 			_shadow.Frame = new RectangleF(new PointF(0, gridToMove.Lines*44-88), _shadow.Frame.Size);
+			
             _scrollView.Frame = new RectangleF(
 			               _scrollView.Frame.Location,
 			               new SizeF(_scrollView.Frame.Width, (gridToMove.Lines + 1) * 44));
+			
+			_scrollView.ContentSize = _scrollView.Frame.Size;
 			SetNeedsDisplay();
 			
 			if (animated)
@@ -173,8 +178,7 @@ namespace UICatalog
         private void DrawMonthLabel(RectangleF rect)
         {
             var r = new RectangleF(new PointF(0, 5), new SizeF {Width = 320, Height = 42});
-			UIColor.DarkGray.SetColor(); // TODO  proper color needs to be set
-            //UIColor.FromRGBA(75/255, 92/255, 111/255, 1).SetColor();
+			UIColor.DarkGray.SetColor();
             DrawString(CurrentMonthYear.ToString("MMMM yyyy"), 
                 r, UIFont.BoldSystemFontOfSize(20),
                 UILineBreakMode.WordWrap, UITextAlignment.Center);
@@ -306,47 +310,56 @@ namespace UICatalog
 		public override void TouchesBegan (NSSet touches, UIEvent evt)
 		{
 			base.TouchesBegan (touches, evt);
-			this.SelectDayView((UITouch)touches.AnyObject);
+			if (SelectDayView((UITouch)touches.AnyObject))
+				_calendarMonthView.OnDateSelected(new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag));
 		}
 		
 		public override void TouchesMoved (NSSet touches, UIEvent evt)
 		{
 			base.TouchesMoved (touches, evt);
-			this.SelectDayView((UITouch)touches.AnyObject);
+			if (SelectDayView((UITouch)touches.AnyObject))
+				_calendarMonthView.OnDateSelected(new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag));
 		}
 		
 		public override void TouchesEnded (NSSet touches, UIEvent evt)
 		{
 			base.TouchesEnded (touches, evt);
-			_calendarMonthView.OnDateSelected(new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag));
+			if (_calendarMonthView.OnFinishedDateSelection==null) return;
+			_calendarMonthView.OnFinishedDateSelection(new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag));
 		}
 
-		private void SelectDayView(UITouch touch){
+		private bool SelectDayView(UITouch touch){
 			var p = touch.LocationInView(this);
+			if (p==null) return false;
+			
 			int index = ((int)p.Y / 44) * 7 + ((int)p.X / 46);
 	
-			if(index > _dayTiles.Count) return;
+			if(index<0 || index >= _dayTiles.Count) return false;
 			
 			var newSelectedDayView = _dayTiles[index];
 		
-			if (newSelectedDayView == SelectedDayView) return;
+			if (newSelectedDayView == SelectedDayView) 
+				return false;
 			
-			if (!newSelectedDayView.Active){
+			if (!newSelectedDayView.Active && touch.Phase!=UITouchPhase.Moved){
 				var day = int.Parse(newSelectedDayView.Text);
 				if (day > 15)
 					_calendarMonthView.MoveCalendarMonths(false, true);
 				else
 					_calendarMonthView.MoveCalendarMonths(true, true);
-				return;
+				return false;
+			} else if (!newSelectedDayView.Active){
+				return false;
 			}
 			
 			SelectedDayView.Selected = false;
 			this.BringSubviewToFront(SelectedDayView);
 			newSelectedDayView.Selected = true;
-			SelectedDayView = newSelectedDayView;
 			
+			SelectedDayView = newSelectedDayView;
+			SetNeedsDisplay();
+			return true;
 		}
-
     }
 
     public class CalendarDayView : UIView
@@ -366,7 +379,7 @@ namespace UICatalog
 
             if (!Active)
             {
-                color = UIColor.Gray;
+                color = UIColor.FromRGBA(0.576f, 0.608f, 0.647f, 1f);
                 img = UIImage.FromFile("images/calendar/datecell.png");
             } else if (Today && Selected)
             {
@@ -382,8 +395,8 @@ namespace UICatalog
                 img = UIImage.FromFile("images/calendar/datecellselected.png");
             }else
             {
-				color = UIColor.DarkTextColor;
-                //color = UIColor.FromRGBA(75/255, 92/255, 111/255, 1);
+				//color = UIColor.DarkTextColor;
+                color = UIColor.FromRGBA(0.275f, 0.341f, 0.412f, 1f);
                 img = UIImage.FromFile("images/calendar/datecell.png");
             }
             img.Draw(new PointF(0, 0));

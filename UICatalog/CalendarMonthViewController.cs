@@ -15,7 +15,12 @@ namespace UICatalog
         public override void ViewDidLoad()
         {
             MonthView = new CalendarMonthView();
-			MonthView.OnDateSelected += DateSelectedHandler;
+			MonthView.OnDateSelected += (date) => {
+				Console.WriteLine(String.Format("Selected {0}", date.ToShortDateString()));
+			};
+			MonthView.OnFinishedDateSelection += (date) => {
+				Console.WriteLine(String.Format("Finished selecting {0}", date.ToShortDateString()));
+			};
             View.AddSubview(MonthView);
         }
 		
