@@ -27,10 +27,6 @@ namespace UICatalog
             View.AddSubview(MonthView);
         }
 		
-		private void DateSelectedHandler(DateTime date){
-			Console.WriteLine(String.Format("Date selected: {0}", date.ToShortDateString()));
-		}
-
         public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
         {
             return false;

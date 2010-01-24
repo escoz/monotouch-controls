@@ -120,8 +120,8 @@ namespace UICatalog
 			CurrentMonthYear = CurrentMonthYear.AddMonths(upwards? 1 : -1);
 			UserInteractionEnabled = false;
 			
-			var pointsToMove = (upwards? 0 +_monthGridView.Lines : 0-_monthGridView.Lines ) * 44;
 			var gridToMove = CreateNewGrid(CurrentMonthYear);
+			var pointsToMove = (upwards? 0 + _monthGridView.Lines : 0 - _monthGridView.Lines) * 44;
 			
 			if (upwards && gridToMove.weekdayOfFirst==0)
 				pointsToMove += 44;
@@ -344,14 +344,11 @@ namespace UICatalog
 
 		private bool SelectDayView(UITouch touch){
 			var p = touch.LocationInView(this);
-			if (p==null) return false;
 			
 			int index = ((int)p.Y / 44) * 7 + ((int)p.X / 46);
-	
 			if(index<0 || index >= _dayTiles.Count) return false;
 			
 			var newSelectedDayView = _dayTiles[index];
-		
 			if (newSelectedDayView == SelectedDayView) 
 				return false;
 			
