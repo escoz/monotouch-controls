@@ -164,15 +164,13 @@ namespace UICatalog
 		private MonthGridView CreateNewGrid(DateTime date){
 			var grid = new MonthGridView(this, date, CurrentDate);
 			grid.BuildGrid();
-			grid.Frame = new RectangleF(0, 420, 320, 400);
+			grid.Frame = new RectangleF(0, 0, 320, 400);
 			return grid;
 		}
 		
         private void LoadInitialGrids()
         {
-            _monthGridView = new MonthGridView(this, CurrentMonthYear, CurrentDate);
-			_monthGridView.BuildGrid();
-			_monthGridView.Frame = new RectangleF(0, 0, 320, 400);
+            _monthGridView = CreateNewGrid(CurrentMonthYear);
 			
             var rect = _scrollView.Frame;
             rect.Size = new SizeF { Height = (_monthGridView.Lines + 1) * 44, Width = rect.Size.Width };
@@ -316,6 +314,9 @@ namespace UICatalog
             Frame = new RectangleF(Frame.Location, new SizeF(Frame.Width, (line + 1) * 44));
 
             Lines = (position == 1 ? line - 1 : line);
+			
+			if (SelectedDayView!=null)
+				this.BringSubviewToFront(SelectedDayView);
         }
 		
 		public override void TouchesBegan (NSSet touches, UIEvent evt)
@@ -364,7 +365,7 @@ namespace UICatalog
 			}
 			
 			SelectedDayView.Selected = false;
-			this.BringSubviewToFront(SelectedDayView);
+			this.BringSubviewToFront(newSelectedDayView);
 			newSelectedDayView.Selected = true;
 			
 			SelectedDayView = newSelectedDayView;
@@ -385,6 +386,7 @@ namespace UICatalog
 		
         public override void Draw(RectangleF rect)
         {
+			Console.WriteLine(String.Format("dayview [{0}]", this.Frame.ToString()));
             UIImage img;
             UIColor color;
 
@@ -412,7 +414,7 @@ namespace UICatalog
             }
             img.Draw(new PointF(0, 0));
             color.SetColor();
-            DrawString(Text, RectangleF.Inflate(Bounds, 4, -6),
+            DrawString(Text, RectangleF.Inflate(Bounds, 4, -8),
                 UIFont.BoldSystemFontOfSize(22), 
                 UILineBreakMode.WordWrap, UITextAlignment.Center);
 
