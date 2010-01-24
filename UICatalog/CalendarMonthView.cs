@@ -178,7 +178,7 @@ namespace UICatalog
             rect.Size = new SizeF { Height = (_monthGridView.Lines + 1) * 44, Width = rect.Size.Width };
             _scrollView.Frame = rect;
 
-            Frame = new RectangleF(Frame.X, Frame.Y, _scrollView.Frame.Size.Width, _scrollView.Frame.Size.Height);
+            Frame = new RectangleF(Frame.X, Frame.Y, _scrollView.Frame.Size.Width, _scrollView.Frame.Size.Height+44);
 
             var imgRect = _shadow.Frame;
             imgRect.Y = rect.Size.Height - 132;
