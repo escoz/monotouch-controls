@@ -247,11 +247,13 @@ namespace UICatalog
             // build last month's days
             for (int i = 1; i <= weekdayOfFirst; i++)
             {
+				var viewDay = new DateTime(_currentMonth.Year, _currentMonth.Month, i);
                 var dayView = new CalendarDayView
                 {
                     Frame = new RectangleF((i - 1) * 46 - 1, 0, 47, 45),
                     Text = lead.ToString(),
-                    Active = false
+					Marked = _calendarMonthView.IsDayMarkedDelegate == null ? 
+							false : _calendarMonthView.IsDayMarkedDelegate(viewDay),
                 };
                 AddSubview(dayView);
                 _dayTiles.Add(dayView);
@@ -297,13 +299,13 @@ namespace UICatalog
                 int dayCounter = 1;
                 for (int i = position; i < 8; i++)
                 {
+					var viewDay = new DateTime(_currentMonth.Year, _currentMonth.Month, i);
                     var dayView = new CalendarDayView
                       {
                           Frame = new RectangleF((i - 1) * 46 -1, line * 44, 47, 45),
                           Text = dayCounter.ToString(),
-                          Selected = false,
-                          Active = false,
-                          Today = false
+						  Marked = _calendarMonthView.IsDayMarkedDelegate == null ? 
+							false : _calendarMonthView.IsDayMarkedDelegate(viewDay),
                       };
                     AddSubview(dayView);
                     _dayTiles.Add(dayView);
@@ -386,7 +388,6 @@ namespace UICatalog
 		
         public override void Draw(RectangleF rect)
         {
-			Console.WriteLine(String.Format("dayview [{0}]", this.Frame.ToString()));
             UIImage img;
             UIColor color;
 
@@ -418,13 +419,14 @@ namespace UICatalog
                 UIFont.BoldSystemFontOfSize(22), 
                 UILineBreakMode.WordWrap, UITextAlignment.Center);
 
-
             if (Marked)
             {
                 var context = UIGraphics.GetCurrentContext();
                 if (Selected || Today)
                     context.SetRGBFillColor(1, 1, 1, 1);
-                else
+                else if (!Active)
+					UIColor.LightGray.SetColor();
+				else
                     context.SetRGBFillColor(75/255f, 92/255f, 111/255f, 1);
                 context.SetLineWidth(0);
                 context.AddEllipseInRect(new RectangleF(Frame.Size.Width/2 - 2, 45-10, 4, 4));
