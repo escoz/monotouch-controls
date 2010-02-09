@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using System.Drawing;
 
-namespace UICatalog
+namespace escoz
 {
 		[MonoTouch.Foundation.Register("ControlsTableViewController")]
 		public partial class ControlsTableViewController : UITableViewController {
@@ -27,11 +28,13 @@ namespace UICatalog
 				public DataSource (ControlsTableViewController tvc)
 				{
 					this.tvc = tvc;
+					tvc._controls.Add("PagedViewController");
+					tvc._controls.Add("CalendarMonthView");
+					tvc._controls.Add("LoadingHUDView");
+					tvc._controls.Add("ImageListView");
 					tvc._controls.Add("UIWebImageView");
 					tvc._controls.Add("RotatingViewController");
 					tvc._controls.Add("UIDecimalField");
-					tvc._controls.Add("LoadingHUDView");
-					tvc._controls.Add("CalendarMonthView");
 				}
 				
 				public override int RowsInSection (UITableView tableView, int section)
@@ -67,9 +70,13 @@ namespace UICatalog
 				{
 					var selected = tvc._controls[indexPath.Row];
 				
-					Console.WriteLine ("UICatalog: Row selected {0}", selected);
+					Console.WriteLine ("escoz: Row selected {0}", selected);
 				
 					switch (selected){
+						case "PagedViewController":
+							tvc.NavigationController.PushViewController(new PagedViewController{
+								PagedViewDataSource = new TestPagesDataSource()}, true);
+							break;
 						case "UIWebImageView":
 							tvc.NavigationController.PushViewController(new UIWebImageViewController(), true);
 							break;
@@ -91,7 +98,18 @@ namespace UICatalog
 							tvc.NavigationController.PushViewController(
 					                 new CalendarMonthViewController{Title="Calendar"}, true);
 							break;
+						case "ImageListView" :
+							tvc.NavigationController.PushViewController(
+					                 _createImageListViewController(), true);
+							break;
 					}
+				}
+			
+				public UIViewController _createImageListViewController(){
+					var controller = new ImageListViewController{
+						Title="Images"
+					};
+					return controller;
 				}
 			
 				public UIViewController _createRotatingViewController(){
@@ -138,6 +156,28 @@ namespace UICatalog
 			}
 		}
 
+	}
+	
+	
+	public class TestPagesDataSource : IPagedViewDataSource {
+			
+		private List<UIColor> _colors = new List<UIColor>{UIColor.Blue, UIColor.Red, UIColor.Yellow, UIColor.Cyan};
+		
+		public UIViewController GetPage(int i){
+			UIViewController c = new UIViewController();
+			c.View.BackgroundColor = _colors[i];
+			c.View.AddSubview(new UILabel{
+				Text= "Swipe to change view", 
+				TextAlignment = UITextAlignment.Center,
+				Frame = new RectangleF(0,0,320,100),
+				BackgroundColor = UIColor.Clear
+			});
+			return c;
+		}
+		
+		public void Reload(){}
+		
+		public int Pages {get {return 4;} }
 	}
 		
 }

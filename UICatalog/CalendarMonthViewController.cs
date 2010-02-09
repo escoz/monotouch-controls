@@ -5,7 +5,7 @@ using MonoTouch.UIKit;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-namespace UICatalog
+namespace escoz
 {
 	public class CalendarMonthViewController : UIViewController
     {

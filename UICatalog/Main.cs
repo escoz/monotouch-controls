@@ -5,7 +5,7 @@ using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
-namespace UICatalog
+namespace escoz
 {
 	public class Application
 	{
@@ -33,5 +33,11 @@ namespace UICatalog
 		public override void OnActivated (UIApplication application)
 		{
 		}
+		
+		public override void OnResignActivation (UIApplication application)
+		{
+			base.OnResignActivation (application);
+		}
+
 	}
 }

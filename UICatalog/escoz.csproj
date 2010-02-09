@@ -13,6 +13,8 @@
     <AssemblyName>UICatalog</AssemblyName>
     <MtouchSdkVersion>3.0</MtouchSdkVersion>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <BundleIdentifier>ESCOZControls</BundleIdentifier>
+    <BundleDisplayName>ESCOZ</BundleDisplayName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,6 +27,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <MtouchLink>None</MtouchLink>
     <MtouchDebug>True</MtouchDebug>
+    <MtouchI18n />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
@@ -55,8 +58,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Developer: Eduardo Scoz (K8WCCTQ997)</CodesignKey>
     <MtouchDebug>False</MtouchDebug>
+    <CodesignProvision>644F4A38-8D5F-4791-9E82-B19E87BF9E08</CodesignProvision>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -84,6 +88,8 @@
     <Compile Include="LoadingHUDViewController.cs" />
     <Compile Include="CalendarMonthView.cs" />
     <Compile Include="CalendarMonthViewController.cs" />
+    <Compile Include="ImageListViewController.cs" />
+    <Compile Include="PagedViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindow.xib" />
@@ -108,5 +114,8 @@
     <Content Include="images\calendar\todayselected.png" />
     <Content Include="images\calendar\topbar.png" />
     <Content Include="images\calendar\shadow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Info.plist" />
   </ItemGroup>
 </Project>

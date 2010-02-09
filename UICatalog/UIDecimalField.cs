@@ -5,7 +5,7 @@ using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using System.Drawing;
 
-namespace UICatalog
+namespace escoz
 {
 	public partial class UIDecimalField : UITextField
 	{

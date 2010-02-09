@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UICatalog", "UICatalog\UICatalog.csproj", "{0F748498-6B6A-4BFF-B212-F28E88AD1AE6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "escoz", "UICatalog\escoz.csproj", "{0F748498-6B6A-4BFF-B212-F28E88AD1AE6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +21,6 @@ Global
 		{0F748498-6B6A-4BFF-B212-F28E88AD1AE6}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = UICatalog\UICatalog.csproj
+		StartupItem = UICatalog\escoz.csproj
 	EndGlobalSection
 EndGlobal

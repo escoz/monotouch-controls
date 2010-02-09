@@ -4,7 +4,7 @@ using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using MonoTouch.CoreGraphics;
 
-namespace UICatalog
+namespace escoz
 {
 	
 	[Register("RotatingViewController")]

@@ -35,7 +35,7 @@ using MonoTouch.CoreGraphics;
 using MonoTouch.Foundation;
 using System;
 
-namespace UICatalog {
+namespace escoz {
 	public class LoadingHUDView : UIView {
 	
 		public static int WIDTH_MARGIN = 20;

@@ -5,7 +5,7 @@ using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
-namespace UICatalog
+namespace escoz
 {
 	public partial class UIWebImageViewController : UIViewController
 	{
