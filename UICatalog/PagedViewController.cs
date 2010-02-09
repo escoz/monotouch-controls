@@ -14,7 +14,7 @@ namespace escoz
  
           readonly UIPageControl _pageControl = new UIPageControl{
                   Pages = 0,
-                  Frame = new RectangleF(0, 430, 320, 30)
+                  Frame = new RectangleF(0, 380, 320, 30)
             };
            
             public PagedViewController ()
@@ -57,12 +57,12 @@ namespace escoz
                   var numberOfPages = PagedViewDataSource.Pages;
                   for (i=0; i<numberOfPages; i++) {
                         var pageViewController = PagedViewDataSource.GetPage(i);
-                        pageViewController.View.Frame = new RectangleF(320*i, 0, 330, 420);
+                        pageViewController.View.Frame = new RectangleF(320*i, 0, 320, this._scrollView.Frame.Height-30);
                         _scrollView.AddSubview(pageViewController.View);
                         _pages.Add(pageViewController);
                   }
                  
-                  _scrollView.ContentSize = new SizeF(320*(i==0?1:i), 420);
+                  _scrollView.ContentSize = new SizeF(320*(i==0?1:i), 400);
                   _pageControl.Pages = i;
                   _pageControl.CurrentPage = 0;
                  
@@ -73,7 +73,8 @@ namespace escoz
             public override void ViewDidLoad ()
             {
                   Console.WriteLine("Paged view did load");
-            View.Frame = new RectangleF(0, 20, 320, 480);
+            		  View.Frame = new RectangleF(0, 20, 320, 480);
+				  View.BackgroundColor = UIColor.Black;
                   View.AddSubview(_scrollView);
                   View.AddSubview(_pageControl);
             }
@@ -91,9 +92,9 @@ namespace escoz
 			        ShowsHorizontalScrollIndicator = false;
 			        ShowsVerticalScrollIndicator = false;
 			        Bounces = true;
-			        ContentSize = new SizeF(320, 430);
+			        ContentSize = new SizeF(320, 400);
 			        PagingEnabled = true;
-			        Frame = new RectangleF(0, 0, 320, 430);
+			        Frame = new RectangleF(0, 0, 320, 400);
 			    }
 			}
       }

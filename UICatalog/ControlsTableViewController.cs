@@ -166,11 +166,12 @@ namespace escoz
 		public UIViewController GetPage(int i){
 			UIViewController c = new UIViewController();
 			c.View.BackgroundColor = _colors[i];
+			c.View.Frame = new RectangleF(10,10,300,200);
 			c.View.AddSubview(new UILabel{
 				Text= "Swipe to change view", 
 				TextAlignment = UITextAlignment.Center,
 				Frame = new RectangleF(0,0,320,100),
-				BackgroundColor = UIColor.Clear
+				BackgroundColor = UIColor.Clear,
 			});
 			return c;
 		}
