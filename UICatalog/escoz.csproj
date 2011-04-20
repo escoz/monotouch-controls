@@ -8,7 +8,7 @@
     <ProjectGuid>{0F748498-6B6A-4BFF-B212-F28E88AD1AE6}</ProjectGuid>
     <ProjectTypeGuids>{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <RootNamespace>UICatalog</RootNamespace>
+    <RootNamespace>escoz</RootNamespace>
     <MainNibFile>MainWindow.xib</MainNibFile>
     <AssemblyName>UICatalog</AssemblyName>
     <MtouchSdkVersion>3.0</MtouchSdkVersion>
