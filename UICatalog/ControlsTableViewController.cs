@@ -30,6 +30,7 @@ namespace escoz
 					this.tvc = tvc;
 					tvc._controls.Add("PagedViewController");
 					tvc._controls.Add("CalendarMonthView");
+					tvc._controls.Add("MultidateCalendarViewController");
 					tvc._controls.Add("LoadingHUDView");
 					tvc._controls.Add("ImageListView");
 					tvc._controls.Add("UIWebImageView");
@@ -97,6 +98,10 @@ namespace escoz
 						case "CalendarMonthView" :
 							tvc.NavigationController.PushViewController(
 					                 new CalendarMonthViewController{Title="Calendar"}, true);
+							break;
+						case "MultidateCalendarViewController" :
+							tvc.NavigationController.PushViewController(
+					                 new MultidateCalendarViewController{Title="Period"}, true);
 							break;
 						case "ImageListView" :
 							tvc.NavigationController.PushViewController(

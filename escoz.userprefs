@@ -1,0 +1,49 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|iPhoneSimulator" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="UICatalog/MultidateCalendarViewController.cs">
+    <Files>
+      <File FileName="UICatalog/RotatingViewController.cs" Line="40" Column="40" />
+      <File FileName="UICatalog/CalendarMonthViewController.cs" Line="21" Column="36" />
+      <File FileName="UICatalog/CalendarMonthView.cs" Line="360" Column="91" />
+      <File FileName="UICatalog/MultidateCalendarViewController.cs" Line="77" Column="44" />
+      <File FileName="UICatalog/Main.cs" Line="1" Column="1" />
+      <File FileName="UICatalog/ControlsTableViewController.cs" Line="104" Column="72" />
+      <File FileName="UICatalog/AmountEditorViewController.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="escoz" expanded="True">
+            <Node name="images" expanded="True">
+              <Node name="calendar" expanded="True" />
+            </Node>
+            <Node name="MultidateCalendarViewController.cs" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State>
+          <Value>NSUserDefaults.StandardUserDefaults.StringForKey("URL")</Value>
+          <Value>NSUserDefaults.StandardUserDefaults["URL"]</Value>
+          <Value>NSUserDefaults.StandardUserDefaults.length</Value>
+          <Value>_customer.Guests[0]</Value>
+          <Value>this</Value>
+          <Value>TableView</Value>
+          <Value>NavigationController</Value>
+        </State>
+      </Pad>
+      <Pad Id="ConnectionManagerPad">
+        <State selected="True" />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/escoz/Projects/monotouch-controls/UICatalog/MultidateCalendarViewController.cs" line="65" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

@@ -15,6 +15,10 @@ namespace escoz {
 	[MonoTouch.Foundation.Register("UIWebImageViewController")]
 	public partial class UIWebImageViewController {
 		
+		private MonoTouch.UIKit.UIView __mt_view;
+		
+		private UIWebImageView __mt_uiWebImageView;
+		
 		#pragma warning disable 0169
 		[MonoTouch.Foundation.Export("onNextImage:")]
 		partial void onNextImage (MonoTouch.UIKit.UIButton sender);
@@ -22,9 +26,11 @@ namespace escoz {
 		[MonoTouch.Foundation.Connect("view")]
 		private MonoTouch.UIKit.UIView view {
 			get {
-				return ((MonoTouch.UIKit.UIView)(this.GetNativeField("view")));
+				this.__mt_view = ((MonoTouch.UIKit.UIView)(this.GetNativeField("view")));
+				return this.__mt_view;
 			}
 			set {
+				this.__mt_view = value;
 				this.SetNativeField("view", value);
 			}
 		}
@@ -32,9 +38,11 @@ namespace escoz {
 		[MonoTouch.Foundation.Connect("uiWebImageView")]
 		private UIWebImageView uiWebImageView {
 			get {
-				return ((UIWebImageView)(this.GetNativeField("uiWebImageView")));
+				this.__mt_uiWebImageView = ((UIWebImageView)(this.GetNativeField("uiWebImageView")));
+				return this.__mt_uiWebImageView;
 			}
 			set {
+				this.__mt_uiWebImageView = value;
 				this.SetNativeField("uiWebImageView", value);
 			}
 		}

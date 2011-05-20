@@ -41,13 +41,13 @@ namespace escoz
 
     public delegate void DateSelected(DateTime date);
     public delegate void MonthChanged(DateTime monthSelected);
-	public delegate bool IsDayMarked(DateTime date);
 
     public class CalendarMonthView : UIView
     {
-		public DateSelected OnDateSelected;
-		public DateSelected OnFinishedDateSelection;
-		public IsDayMarked IsDayMarkedDelegate;
+		public Action<DateTime> OnDateSelected;
+		public Action<DateTime> OnFinishedDateSelection;
+		public Func<DateTime, bool> IsDayMarkedDelegate;
+		public Func<DateTime, bool> IsDateAvailable;
 		
         public DateTime CurrentMonthYear;
         protected DateTime CurrentDate { get; set; }
@@ -63,6 +63,13 @@ namespace escoz
         {
             CurrentDate = DateTime.Now.Date;
 			CurrentMonthYear = new DateTime(CurrentDate.Year, CurrentDate.Month, 1);
+		}
+		
+		public override void SetNeedsDisplay ()
+		{
+			base.SetNeedsDisplay();
+			if (_monthGridView!=null)
+				_monthGridView.Update();
 		}
 		
 		public override void LayoutSubviews ()
@@ -90,6 +97,11 @@ namespace escoz
 			
 			calendarIsLoaded = true;
         }
+		
+		public void DeselectDate(){
+			if (_monthGridView!=null)
+				_monthGridView.DeselectDayView();
+		}
 
         private void LoadButtons()
         {
@@ -162,7 +174,8 @@ namespace escoz
         }
 		
 		private MonthGridView CreateNewGrid(DateTime date){
-			var grid = new MonthGridView(this, date, CurrentDate);
+			var grid = new MonthGridView(this, date);
+			grid.CurrentDate = CurrentDate;
 			grid.BuildGrid();
 			grid.Frame = new RectangleF(0, 0, 320, 400);
 			return grid;
@@ -221,7 +234,7 @@ namespace escoz
     {
 		private CalendarMonthView _calendarMonthView;
 		
-        private readonly DateTime _currentDay;
+        public DateTime CurrentDate {get;set;}
         private DateTime _currentMonth;
         protected readonly IList<CalendarDayView> _dayTiles = new List<CalendarDayView>();
         public int Lines { get; set; }
@@ -229,12 +242,25 @@ namespace escoz
 		public int weekdayOfFirst;
         public IList<DateTime> Marks { get; set; }
 
-        public MonthGridView(CalendarMonthView calendarMonthView, DateTime month, DateTime day)
+        public MonthGridView(CalendarMonthView calendarMonthView, DateTime month)
         {
 			_calendarMonthView = calendarMonthView;
-            _currentDay = day;
             _currentMonth = month.Date;
         }
+		
+		public void Update(){
+			foreach (var v in _dayTiles)
+				updateDayView(v);
+			
+			this.SetNeedsDisplay();
+		}
+		
+		public void updateDayView(CalendarDayView dayView){
+			dayView.Marked = _calendarMonthView.IsDayMarkedDelegate == null ? 
+							false : _calendarMonthView.IsDayMarkedDelegate(dayView.Date);
+			dayView.Available = _calendarMonthView.IsDateAvailable == null ? 
+							true : _calendarMonthView.IsDateAvailable(dayView.Date);
+		}
 
         public void BuildGrid()
         {
@@ -243,18 +269,16 @@ namespace escoz
             var daysInMonth = DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month);
             weekdayOfFirst = (int)_currentMonth.DayOfWeek;
             var lead = daysInPreviousMonth - (weekdayOfFirst - 1);
-
+			
             // build last month's days
             for (int i = 1; i <= weekdayOfFirst; i++)
             {
 				var viewDay = new DateTime(_currentMonth.Year, _currentMonth.Month, i);
-                var dayView = new CalendarDayView
-                {
-                    Frame = new RectangleF((i - 1) * 46 - 1, 0, 47, 45),
-                    Text = lead.ToString(),
-					Marked = _calendarMonthView.IsDayMarkedDelegate == null ? 
-							false : _calendarMonthView.IsDayMarkedDelegate(viewDay),
-                };
+                var dayView = new CalendarDayView();
+				dayView.Frame = new RectangleF((i - 1) * 46 - 1, 0, 47, 45);
+            	dayView.Date = viewDay;
+				dayView.Text = lead.ToString();
+				
                 AddSubview(dayView);
                 _dayTiles.Add(dayView);
                 lead++;
@@ -270,14 +294,15 @@ namespace escoz
                 var dayView = new CalendarDayView
                   {
                       Frame = new RectangleF((position - 1) * 46 - 1, line * 44, 47, 45),
-                      Today = (_currentDay.Date==viewDay.Date),
+                      Today = (CurrentDate.Date==viewDay.Date),
                       Text = i.ToString(),
+					
                       Active = true,
                       Tag = i,
-                      Marked = _calendarMonthView.IsDayMarkedDelegate == null ? 
-							false : _calendarMonthView.IsDayMarkedDelegate(viewDay),
-					  Selected = (i == _currentDay.AddDays(1).Day )
+					  Selected = (i == CurrentDate.AddDays(1).Day )
                   };
+				dayView.Date = viewDay;
+				updateDayView(dayView);
 				
 				if (dayView.Selected)
 					SelectedDayView = dayView;
@@ -304,9 +329,10 @@ namespace escoz
                       {
                           Frame = new RectangleF((i - 1) * 46 -1, line * 44, 47, 45),
                           Text = dayCounter.ToString(),
-						  Marked = _calendarMonthView.IsDayMarkedDelegate == null ? 
-							false : _calendarMonthView.IsDayMarkedDelegate(viewDay),
                       };
+					dayView.Date = viewDay;
+					updateDayView(dayView);
+					
                     AddSubview(dayView);
                     _dayTiles.Add(dayView);
                     dayCounter++;
@@ -324,14 +350,14 @@ namespace escoz
 		public override void TouchesBegan (NSSet touches, UIEvent evt)
 		{
 			base.TouchesBegan (touches, evt);
-			if (SelectDayView((UITouch)touches.AnyObject))
+			if (SelectDayView((UITouch)touches.AnyObject)&& _calendarMonthView.OnDateSelected!=null)
 				_calendarMonthView.OnDateSelected(new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag));
 		}
 		
 		public override void TouchesMoved (NSSet touches, UIEvent evt)
 		{
 			base.TouchesMoved (touches, evt);
-			if (SelectDayView((UITouch)touches.AnyObject))
+			if (SelectDayView((UITouch)touches.AnyObject)&& _calendarMonthView.OnDateSelected!=null)
 				_calendarMonthView.OnDateSelected(new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag));
 		}
 		
@@ -339,7 +365,9 @@ namespace escoz
 		{
 			base.TouchesEnded (touches, evt);
 			if (_calendarMonthView.OnFinishedDateSelection==null) return;
-			_calendarMonthView.OnFinishedDateSelection(new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag));
+			var date = new DateTime(_currentMonth.Year, _currentMonth.Month, SelectedDayView.Tag);
+			if (_calendarMonthView.IsDateAvailable == null || _calendarMonthView.IsDateAvailable(date))
+				_calendarMonthView.OnFinishedDateSelection(date);
 		}
 
 		private bool SelectDayView(UITouch touch){
@@ -359,11 +387,13 @@ namespace escoz
 				else
 					_calendarMonthView.MoveCalendarMonths(true, true);
 				return false;
-			} else if (!newSelectedDayView.Active){
+			} else if (!newSelectedDayView.Active && !newSelectedDayView.Available){
 				return false;
 			}
 			
-			SelectedDayView.Selected = false;
+			if (SelectedDayView!=null)
+				SelectedDayView.Selected = false;
+			
 			this.BringSubviewToFront(newSelectedDayView);
 			newSelectedDayView.Selected = true;
 			
@@ -371,12 +401,21 @@ namespace escoz
 			SetNeedsDisplay();
 			return true;
 		}
+		
+		public void DeselectDayView(){
+			if (SelectedDayView==null) return;
+			SelectedDayView.Selected= false;
+			SelectedDayView = null;
+			SetNeedsDisplay();
+		}
     }
 
     public class CalendarDayView : UIView
     {
 		string _text;
-        bool _active, _today, _selected, _marked;
+		public DateTime Date {get;set;}
+        bool _active, _today, _selected, _marked, _available;
+		public bool Available {get {return _available; } set {_available = value; SetNeedsDisplay(); }}
 		public string Text {get { return _text; } set { _text = value; SetNeedsDisplay(); } }
         public bool Active {get { return _active; } set { _active = value; SetNeedsDisplay();  } }
         public bool Today {get { return _today; } set { _today = value; SetNeedsDisplay(); } }
@@ -388,7 +427,7 @@ namespace escoz
             UIImage img;
             UIColor color;
 
-            if (!Active)
+            if (!Active || !Available)
             {
                 color = UIColor.FromRGBA(0.576f, 0.608f, 0.647f, 1f);
                 img = UIImage.FromFile("images/calendar/datecell.png");
@@ -404,6 +443,10 @@ namespace escoz
             {
                 color = UIColor.White;
                 img = UIImage.FromFile("images/calendar/datecellselected.png");
+            } else if (Marked)
+            {
+                color = UIColor.White;
+                img = UIImage.FromFile("images/calendar/datecellmarked.png");
             }else
             {
 				//color = UIColor.DarkTextColor;
@@ -416,20 +459,20 @@ namespace escoz
                 UIFont.BoldSystemFontOfSize(22), 
                 UILineBreakMode.WordWrap, UITextAlignment.Center);
 
-            if (Marked)
-            {
-                var context = UIGraphics.GetCurrentContext();
-                if (Selected || Today)
-                    context.SetRGBFillColor(1, 1, 1, 1);
-                else if (!Active)
-					UIColor.LightGray.SetColor();
-				else
-                    context.SetRGBFillColor(75/255f, 92/255f, 111/255f, 1);
-                context.SetLineWidth(0);
-                context.AddEllipseInRect(new RectangleF(Frame.Size.Width/2 - 2, 45-10, 4, 4));
-                context.FillPath();
-
-            }
+//            if (Marked)
+//            {
+//                var context = UIGraphics.GetCurrentContext();
+//                if (Selected || Today)
+//                    context.SetRGBFillColor(1, 1, 1, 1);
+//                else if (!Active || !Available)
+//					UIColor.LightGray.SetColor();
+//				else
+//                    context.SetRGBFillColor(75/255f, 92/255f, 111/255f, 1);
+//                context.SetLineWidth(0);
+//                context.AddEllipseInRect(new RectangleF(Frame.Size.Width/2 - 2, 45-10, 4, 4));
+//                context.FillPath();
+//
+//            }
         }
     }
 }

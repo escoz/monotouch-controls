@@ -18,12 +18,16 @@ namespace escoz
 			MonthView.OnDateSelected += (date) => {
 				Console.WriteLine(String.Format("Selected {0}", date.ToShortDateString()));
 			};
-			MonthView.OnFinishedDateSelection += (date) => {
+			MonthView.OnFinishedDateSelection = (date) => {
 				Console.WriteLine(String.Format("Finished selecting {0}", date.ToShortDateString()));
 			};
-			MonthView.IsDayMarkedDelegate += (date) => {
+			MonthView.IsDayMarkedDelegate = (date) => {
 				return (date.Day % 2==0) ? true : false;
 			};
+			MonthView.IsDateAvailable = (date)=>{
+				return (date > DateTime.Today);
+			};
+			
             View.AddSubview(MonthView);
         }
 		

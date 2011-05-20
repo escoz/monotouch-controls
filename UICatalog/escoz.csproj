@@ -11,10 +11,10 @@
     <RootNamespace>escoz</RootNamespace>
     <MainNibFile>MainWindow.xib</MainNibFile>
     <AssemblyName>UICatalog</AssemblyName>
-    <MtouchSdkVersion>3.0</MtouchSdkVersion>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <BundleIdentifier>ESCOZControls</BundleIdentifier>
     <BundleDisplayName>ESCOZ</BundleDisplayName>
+    <MtouchMinimumOS>3.0</MtouchMinimumOS>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,10 +24,14 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
     <MtouchLink>None</MtouchLink>
     <MtouchDebug>True</MtouchDebug>
     <MtouchI18n />
+    <MtouchSdkVersion>4.3</MtouchSdkVersion>
+    <MtouchUseLlvm>false</MtouchUseLlvm>
+    <MtouchArch>ARMv6</MtouchArch>
+    <MtouchUseThumb>false</MtouchUseThumb>
+    <MtouchUseSGen>false</MtouchUseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
@@ -35,9 +39,13 @@
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
     <MtouchLink>None</MtouchLink>
     <MtouchDebug>False</MtouchDebug>
+    <MtouchSdkVersion>3.0</MtouchSdkVersion>
+    <MtouchUseLlvm>false</MtouchUseLlvm>
+    <MtouchArch>ARMv6</MtouchArch>
+    <MtouchUseThumb>false</MtouchUseThumb>
+    <MtouchUseSGen>false</MtouchUseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,9 +55,14 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
     <MtouchDebug>True</MtouchDebug>
     <CodesignKey>iPhone Developer</CodesignKey>
+    <MtouchSdkVersion>4.3</MtouchSdkVersion>
+    <MtouchUseLlvm>false</MtouchUseLlvm>
+    <MtouchArch>ARMv6</MtouchArch>
+    <MtouchUseThumb>false</MtouchUseThumb>
+    <MtouchUseSGen>false</MtouchUseSGen>
+    <MtouchI18n />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -57,10 +70,14 @@
     <OutputPath>bin\iPhone\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
     <CodesignKey>iPhone Developer: Eduardo Scoz (K8WCCTQ997)</CodesignKey>
     <MtouchDebug>False</MtouchDebug>
     <CodesignProvision>644F4A38-8D5F-4791-9E82-B19E87BF9E08</CodesignProvision>
+    <MtouchSdkVersion>3.0</MtouchSdkVersion>
+    <MtouchUseLlvm>false</MtouchUseLlvm>
+    <MtouchArch>ARMv6</MtouchArch>
+    <MtouchUseThumb>false</MtouchUseThumb>
+    <MtouchUseSGen>false</MtouchUseSGen>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -90,6 +107,7 @@
     <Compile Include="CalendarMonthViewController.cs" />
     <Compile Include="ImageListViewController.cs" />
     <Compile Include="PagedViewController.cs" />
+    <Compile Include="MultidateCalendarViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindow.xib" />
@@ -114,6 +132,7 @@
     <Content Include="images\calendar\todayselected.png" />
     <Content Include="images\calendar\topbar.png" />
     <Content Include="images\calendar\shadow.png" />
+    <Content Include="images\calendar\datecellmarked.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
